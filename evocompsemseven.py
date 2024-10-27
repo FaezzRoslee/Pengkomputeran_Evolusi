@@ -11,7 +11,8 @@ POP_SIZE = 500
 #MUT_RATE: Rate at which our string will be changed.
 MUT_RATE = 0.2
 #TARGET: Our goal.
-TARGET = 'RaidenShogun'
+#TARGET = 'RaidenShogun'
+TARGET = st.text_input("Enter your name", "RaidenShogun")
 #GENES: Options from which our population would be created.
 GENES = ' abcdefghijklmnopqrstuvwxyzQWERTYUIOPLKJHGFDSAZXCVBNM'
 
