@@ -263,7 +263,7 @@ st.write(minimum_distance)
 #shortest path
 # shortest_path = offspring_list[index_minimum]
 shortest_path = best_mixed_offspring[index_minimum]
-st.write(short_distance)
+st.write(shortest_distance)
 
 x_shortest = []
 y_shortest = []
