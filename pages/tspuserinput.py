@@ -11,7 +11,7 @@ x_coords = []
 y_coords = []
 
 st.title("Traveling Salesman Problem with Genetic Algorithm")
-st.subheader("Input 10 Cities with Coordinates")
+st.subheader("Input the Cities with Coordinates")
 
 for i in range(10):
     city_name = st.text_input(f"Enter city name #{i + 1}:", key=f"city_name_{i}")
