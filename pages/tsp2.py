@@ -8,9 +8,9 @@ import pandas as pd
 import seaborn as sns
 import streamlit as st
 
-x = [35.7, 34.7, 35.0, 35.2, 43.1, 33.6, 34.7, 35.5, 34.4, 38.3]
-y = [139.7, 135.5, 135.8, 136.9, 141.3, 130.4, 135.2, 139.6, 132.4, 140.9]
-cities_names = ["Tokyo", "Osaka", "Kyoto", "Nagoya", "Sapporo", "Fukuoka", "Kobe", "Yokohama", "Hiroshima", "Sendai"]
+x = [5.3, 5.8, 6.0, 5.7, 6.1, 6.2, 5.5, 5.4, 5.6, 5.9]
+y = [102.3, 101.8, 102.0, 102.2, 102.5, 101.9, 102.1, 101.7, 102.4, 102.6]
+cities_names = ["Kota Bharu", "Tanah Merah", "Pasir Mas", "Machang", "Bachok", "Tumpat", "Pasir Puteh", "Gua Musang", "Jeli", "Kuala Krai"]
 city_coords = dict(zip(cities_names, zip(x, y)))
 n_population = 250
 crossover_per = 0.8
@@ -21,16 +21,16 @@ n_generations = 200
 colors = sns.color_palette("pastel", len(cities_names))
 # City Icons
 city_icons = {
-    "Tokyo": "♕",
-    "Osaka": "♖",
-    "Kyoto": "♗",
-    "Nagoya": "♘",
-    "Sapporo": "♙",
-    "Fukuoka": "♔",
-    "Kobe": "♚",
-    "Yokohama": "♛",
-    "Hiroshima": "♜",
-    "Sendai": "♝"
+    "Kota Bharu": "♕",
+    "Tanah Merah": "♖",
+    "Pasir Mas": "♗",
+    "Machang": "♘",
+    "Bachok": "♙",
+    "Tumpat": "♔",
+    "Pasir Puteh": "♚",
+    "Gua Musang": "♛",
+    "Jeli": "♜",
+    "Kuala Krai": "♝"
 }
 fig, ax = plt.subplots()
 ax.grid(False)  # Grid
