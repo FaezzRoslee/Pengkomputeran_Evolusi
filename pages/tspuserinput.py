@@ -99,8 +99,18 @@ def crossover(parent_1, parent_2):
     return offspring_1, offspring_2
 
 def mutation(offspring):
-    n_cities_cut = len(city_names) - 1
-    index_1, index_2 = random.sample(range(n_cities_cut + 1), 2)
+    """
+    Implement mutation strategy in a single offspring
+    Input:
+    1- offspring individual
+    Output:
+    1- mutated offspring individual
+    """
+    n_cities_cut = len(cities_names) - 1
+    index_1 = random.randint(0, n_cities_cut)
+    index_2 = random.randint(0, n_cities_cut)
+
+    # Swap the cities at index_1 and index_2
     offspring[index_1], offspring[index_2] = offspring[index_2], offspring[index_1]
     return offspring
 
