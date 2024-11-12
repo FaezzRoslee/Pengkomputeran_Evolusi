@@ -1,6 +1,7 @@
 # ackley multimodal function
 import streamlit as st
-from numpy import arange, exp, sqrt, cos, e, pi, meshgrid
+from numpy import arange, exp, sqrt, cos, e, pi, meshgrid, asarray, argsort
+from numpy.random import randn, rand, seed
 from matplotlib import pyplot
 from mpl_toolkits.mplot3d import Axes3D
 
@@ -28,8 +29,6 @@ pyplot.show()
 st.pyplot(figure)
 
 # evolution strategy (mu, lambda) of the ackley objective function
-from numpy import asarray, exp, sqrt, cos, e, pi, argsort, randn, rand, seed
-
 # objective function
 def objective(v):
 	x, y = v
