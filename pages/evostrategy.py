@@ -1,5 +1,5 @@
 # ackley multimodal function
-from streamlit 
+from streamlit as lit
 from numpy import arange
 from numpy import exp
 from numpy import sqrt
@@ -29,3 +29,4 @@ axis = figure.add_subplot(111, projection='3d')
 axis.plot_surface(x, y, results, cmap='jet')
 # show the plot
 pyplot.show()
+st.pyplot(figure)
