@@ -28,7 +28,7 @@ pyplot.show()
 st.pyplot(figure)
 
 # evolution strategy (mu, lambda) of the ackley objective function
-from numpy import asarray, argsort, randn, rand, seed
+from numpy import asarray, exp, sqrt, cos, e, pi, argsort, randn, rand, seed
 
 # objective function
 def objective(v):
