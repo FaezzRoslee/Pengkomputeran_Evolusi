@@ -29,7 +29,7 @@ pyplot.show()
 st.pyplot(figure)
 
 # evolution strategy (mu, lambda) of the ackley objective function
-st.write(Evolution strategy (mu, lambda) of the ackley objective function)
+st.write("Evolution strategy (mu, lambda) of the ackley objective function")
 # objective function
 def objective(v):
 	x, y = v
@@ -96,12 +96,12 @@ mu = 20
 lam = 100
 # perform the evolution strategy (mu, lambda) search
 best, score = es_comma(objective, bounds, n_iter, step_size, mu, lam)
-st.write('Reporting the Best Solution Found for (mu, lambda) algorithm:')
+st.write("Reporting the Best Solution Found for (mu, lambda) algorithm:")
 st.write('Done!')
 st.write('f(%s) = %f' % (best, score))
 
 # Evolution strategy (mu + lambda) of the ackley objective function
-st.write(Evolution strategy (mu + lambda) of the ackley objective function)
+st.write("Evolution strategy (mu + lambda) of the ackley objective function")
 # objective function
 def objective(v):
 	x, y = v
@@ -169,6 +169,6 @@ mu = 20
 lam = 100
 # perform the evolution strategy (mu + lambda) search
 best, score = es_plus(objective, bounds, n_iter, step_size, mu, lam)
-st.write('Reporting the Best Solution Found for (mu + lambda) algorithm:')
+st.write("Reporting the Best Solution Found for (mu + lambda) algorithm:")
 st.write('Done!')
 st.write('f(%s) = %f' % (best, score))
