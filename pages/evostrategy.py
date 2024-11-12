@@ -1,12 +1,6 @@
 # ackley multimodal function
 import streamlit as st
-from numpy import arange
-from numpy import exp
-from numpy import sqrt
-from numpy import cos
-from numpy import e
-from numpy import pi
-from numpy import meshgrid
+from numpy import arange, exp, sqrt, cos, e, pi, meshgrid
 from matplotlib import pyplot
 from mpl_toolkits.mplot3d import Axes3D
 
@@ -27,6 +21,8 @@ results = objective(x, y)
 figure = pyplot.figure()
 axis = figure.add_subplot(111, projection='3d')
 axis.plot_surface(x, y, results, cmap='jet')
+# add a title
+axis.set_title("3D Surface Plot of the Ackley Multimodal Function")
 # show the plot
 pyplot.show()
 st.pyplot(figure)
