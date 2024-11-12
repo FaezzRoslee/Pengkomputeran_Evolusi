@@ -28,16 +28,7 @@ pyplot.show()
 st.pyplot(figure)
 
 # evolution strategy (mu, lambda) of the ackley objective function
-from numpy import asarray
-from numpy import exp
-from numpy import sqrt
-from numpy import cos
-from numpy import e
-from numpy import pi
-from numpy import argsort
-from numpy.random import randn
-from numpy.random import rand
-from numpy.random import seed
+from numpy import asarray, argsort, randn, rand, seed
 
 # objective function
 def objective(v):
@@ -105,5 +96,6 @@ mu = 20
 lam = 100
 # perform the evolution strategy (mu, lambda) search
 best, score = es_comma(objective, bounds, n_iter, step_size, mu, lam)
+st.write('Reporting the Best Solution Found')
 st.write('Done!')
 st.write('f(%s) = %f' % (best, score))
