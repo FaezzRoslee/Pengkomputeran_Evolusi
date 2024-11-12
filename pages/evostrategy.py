@@ -29,7 +29,7 @@ pyplot.show()
 st.pyplot(figure)
 
 # evolution strategy (mu, lambda) of the ackley objective function
-st.write("Evolution strategy (mu, lambda) of the ackley objective function")
+st.header("Evolution Strategy (mu, lambda)")
 # objective function
 def objective(v):
 	x, y = v
@@ -81,7 +81,6 @@ def es_comma(objective, bounds, n_iter, step_size, mu, lam):
 		population = children
 	return [best, best_eval]
 
-
 # seed the pseudorandom number generator
 seed(1)
 # define range for input
@@ -101,7 +100,7 @@ st.write('Done!')
 st.write('f(%s) = %f' % (best, score))
 
 # Evolution strategy (mu + lambda) of the ackley objective function
-st.write("Evolution strategy (mu + lambda) of the ackley objective function")
+st.header("Evolution Strategy (mu + lambda)")
 # objective function
 def objective(v):
 	x, y = v
