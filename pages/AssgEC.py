@@ -21,11 +21,12 @@ if uploaded_file:
     # Genetic Algorithm Parameters
     with st.sidebar:
         st.subheader("Genetic Algorithm Parameters")
-        POP_SIZE = st.number_input("Population Size", min_value=100, max_value=1000, value=500, step=50)
-        MUT_RATE = st.slider("Mutation Rate", min_value=0.01, max_value=0.05, value=0.02, step=0.01)
+        CO_R = st.slider("Crossover Rate (CO_R)", min_value=0.0, max_value=0.95, value=0.8, step=0.05)
+        MUT_R = st.slider("Mutation Rate (MUT_R)", min_value=0.01, max_value=0.05, value=0.02, step=0.01)
         TARGET = st.text_input("Target String (e.g., optimal program schedule)", "news sports documentary")
 
     GENES = list(data.columns[1:])  # Use columns (e.g., hours) as genes
+    POP_SIZE = 500  # Fixed population size
 
     # Helper Functions
     def initialize_pop(target_len):
@@ -43,12 +44,15 @@ if uploaded_file:
         return [ch[0] for ch in fitness_sorted[:POP_SIZE // 2]]
 
     def crossover(parent1, parent2):
-        point = random.randint(1, len(parent1) - 1)
-        return parent1[:point] + parent2[point:]
+        # Perform crossover based on the crossover rate
+        if random.random() < CO_R:
+            point = random.randint(1, len(parent1) - 1)
+            return parent1[:point] + parent2[point:]
+        return parent1  # No crossover, return the first parent as is
 
     def mutate(chromosome):
         for i in range(len(chromosome)):
-            if random.random() < MUT_RATE:
+            if random.random() < MUT_R:
                 chromosome[i] = random.choice(GENES)
         return chromosome
 
