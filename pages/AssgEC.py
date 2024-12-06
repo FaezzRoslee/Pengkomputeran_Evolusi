@@ -23,9 +23,9 @@ if uploaded_file:
         st.subheader("Genetic Algorithm Parameters")
         CO_R = st.slider("Crossover Rate (CO_R)", min_value=0.0, max_value=0.95, value=0.8, step=0.05)
         MUT_R = st.slider("Mutation Rate (MUT_R)", min_value=0.01, max_value=0.05, value=0.02, step=0.01)
-        TARGET = st.text_input("Target String (e.g., optimal program schedule)", "news sports documentary")
 
-    GENES = list(data.columns[1:])  # Use columns (e.g., hours) as genes
+    GENES = list(data.columns[1:])  # Use columns (e.g., program names or hours) as genes
+    TARGET = list(data.columns[1:])  # Use the column names to define the optimal schedule
     POP_SIZE = 500  # Fixed population size
 
     # Helper Functions
@@ -37,18 +37,17 @@ if uploaded_file:
         return population
 
     def fitness_cal(target, chromosome):
-        return sum(1 for t, c in zip(target.split(), chromosome) if t != c)
+        return sum(1 for t, c in zip(target, chromosome) if t != c)
 
     def selection(population, fitness):
         fitness_sorted = sorted(zip(population, fitness), key=lambda x: x[1])
         return [ch[0] for ch in fitness_sorted[:POP_SIZE // 2]]
 
     def crossover(parent1, parent2):
-        # Perform crossover based on the crossover rate
         if random.random() < CO_R:
             point = random.randint(1, len(parent1) - 1)
             return parent1[:point] + parent2[point:]
-        return parent1  # No crossover, return the first parent as is
+        return parent1
 
     def mutate(chromosome):
         for i in range(len(chromosome)):
@@ -58,7 +57,7 @@ if uploaded_file:
 
     # Main Function
     def genetic_algorithm(target):
-        target_len = len(target.split())
+        target_len = len(target)
         population = initialize_pop(target_len)
         generation = 0
 
@@ -92,7 +91,7 @@ if uploaded_file:
             elapsed_time = time.time() - start_time
 
             st.success("Optimization Complete!")
-            st.write(f"Solution: {solution}")
+            st.write(f"Optimal Schedule: {solution}")
             st.write(f"Generations: {generations}")
             st.write(f"Elapsed Time: {elapsed_time:.2f} seconds")
 
