@@ -94,7 +94,14 @@ if uploaded_file:
             st.success("Optimization Complete!")
             st.write(f"Generations: {generations}")
             st.write(f"Elapsed Time: {elapsed_time:.2f} seconds")
-            st.subheader("Optimal Schedule")
+            
+            # Display Parameters
+            st.subheader("Parameters Used")
+            st.write(f"- **Crossover Rate (CO_R):** {CO_R}")
+            st.write(f"- **Mutation Rate (MUT_R):** {MUT_R}")
+            
+            # Display Schedule
+            st.subheader("Resulting Schedule")
             schedule_df = pd.DataFrame({
                 "Program": data.columns[1:],
                 "Scheduled Slot": solution
