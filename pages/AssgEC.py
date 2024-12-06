@@ -18,14 +18,20 @@ if uploaded_file:
     st.subheader("Program Ratings")
     st.dataframe(data)
 
+    # Extract program names
+    if "Type of Program" in data.columns:
+        GENES = list(data["Type of Program"])  # Use "Type of Program" column as GENES
+        TARGET = GENES  # Target schedule is the same as the program names
+    else:
+        st.error("The uploaded file must contain a 'Type of Program' column.")
+        st.stop()
+
     # Genetic Algorithm Parameters
     with st.sidebar:
         st.subheader("Genetic Algorithm Parameters")
         CO_R = st.slider("Crossover Rate (CO_R)", min_value=0.0, max_value=0.95, value=0.8, step=0.05)
         MUT_R = st.slider("Mutation Rate (MUT_R)", min_value=0.01, max_value=0.05, value=0.02, step=0.01)
-
-    GENES = list(data.columns[1:])  # Use columns (e.g., program names or hours) as genes
-    TARGET = list(data.columns[1:])  # Use the column names to define the optimal schedule
+    
     POP_SIZE = 500  # Fixed population size
 
     # Helper Functions
@@ -103,7 +109,7 @@ if uploaded_file:
             # Display Schedule
             st.subheader("Resulting Schedule")
             schedule_df = pd.DataFrame({
-                "Program": data.columns[1:],
+                "Program": GENES,  # Original "Type of Program" values
                 "Scheduled Slot": solution
             })
             st.dataframe(schedule_df)
