@@ -90,10 +90,16 @@ if uploaded_file:
             solution, generations = genetic_algorithm(TARGET)
             elapsed_time = time.time() - start_time
 
+            # Display results
             st.success("Optimization Complete!")
-            st.write(f"Optimal Schedule: {solution}")
             st.write(f"Generations: {generations}")
             st.write(f"Elapsed Time: {elapsed_time:.2f} seconds")
+            st.subheader("Optimal Schedule")
+            schedule_df = pd.DataFrame({
+                "Program": data.columns[1:],
+                "Scheduled Slot": solution
+            })
+            st.dataframe(schedule_df)
 
 else:
     st.warning("Please upload the CSV file to proceed.")
