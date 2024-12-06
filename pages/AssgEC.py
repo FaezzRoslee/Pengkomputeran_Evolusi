@@ -18,35 +18,39 @@ if uploaded_file:
     st.subheader("Program Ratings")
     st.dataframe(data)
 
-    # Extract program names
-    if "Type of Program" in data.columns:
-        GENES = list(data["Type of Program"])  # Use "Type of Program" column as GENES
-        TARGET = GENES  # Target schedule is the same as the program names
-    else:
+    if "Type of Program" not in data.columns:
         st.error("The uploaded file must contain a 'Type of Program' column.")
         st.stop()
+
+    PROGRAMS = data["Type of Program"].tolist()  # List of program names
+    HOURS = data.columns[1:].tolist()  # List of hours (e.g., 'Hour 6', 'Hour 7', etc.)
+    preferences = data.iloc[:, 1:].values  # Preference scores as a 2D array
 
     # Genetic Algorithm Parameters
     with st.sidebar:
         st.subheader("Genetic Algorithm Parameters")
         CO_R = st.slider("Crossover Rate (CO_R)", min_value=0.0, max_value=0.95, value=0.8, step=0.05)
         MUT_R = st.slider("Mutation Rate (MUT_R)", min_value=0.01, max_value=0.05, value=0.02, step=0.01)
-    
+
     POP_SIZE = 500  # Fixed population size
 
     # Helper Functions
-    def initialize_pop(target_len):
+    def initialize_pop():
         population = []
         for _ in range(POP_SIZE):
-            chromosome = [random.choice(GENES) for _ in range(target_len)]
+            chromosome = random.sample(HOURS, len(PROGRAMS))  # Assign random hours to programs
             population.append(chromosome)
         return population
 
-    def fitness_cal(target, chromosome):
-        return sum(1 for t, c in zip(target, chromosome) if t != c)
+    def fitness_cal(chromosome):
+        fitness = 0
+        for i, hour in enumerate(chromosome):
+            hour_index = HOURS.index(hour)
+            fitness += preferences[i][hour_index]  # Add the preference score for the assigned hour
+        return fitness
 
     def selection(population, fitness):
-        fitness_sorted = sorted(zip(population, fitness), key=lambda x: x[1])
+        fitness_sorted = sorted(zip(population, fitness), key=lambda x: x[1], reverse=True)
         return [ch[0] for ch in fitness_sorted[:POP_SIZE // 2]]
 
     def crossover(parent1, parent2):
@@ -58,22 +62,16 @@ if uploaded_file:
     def mutate(chromosome):
         for i in range(len(chromosome)):
             if random.random() < MUT_R:
-                chromosome[i] = random.choice(GENES)
+                chromosome[i] = random.choice(HOURS)
         return chromosome
 
     # Main Function
-    def genetic_algorithm(target):
-        target_len = len(target)
-        population = initialize_pop(target_len)
+    def genetic_algorithm():
+        population = initialize_pop()
         generation = 0
 
-        while True:
-            fitness = [fitness_cal(target, chromosome) for chromosome in population]
-
-            # Check if target is achieved
-            if min(fitness) == 0:
-                best_solution = population[fitness.index(min(fitness))]
-                return best_solution, generation
+        while generation < 100:  # Stop after a fixed number of generations for simplicity
+            fitness = [fitness_cal(chromosome) for chromosome in population]
 
             # Selection
             selected = selection(population, fitness)
@@ -89,16 +87,22 @@ if uploaded_file:
             population = offspring
             generation += 1
 
+        # Return the best solution
+        best_fitness = max(fitness)
+        best_solution = population[fitness.index(best_fitness)]
+        return best_solution, best_fitness, generation
+
     # Run the Genetic Algorithm
     if st.button("Run Algorithm"):
         with st.spinner("Running Genetic Algorithm..."):
             start_time = time.time()
-            solution, generations = genetic_algorithm(TARGET)
+            solution, best_fitness, generations = genetic_algorithm()
             elapsed_time = time.time() - start_time
 
             # Display results
             st.success("Optimization Complete!")
             st.write(f"Generations: {generations}")
+            st.write(f"Best Fitness Score: {best_fitness:.2f}")
             st.write(f"Elapsed Time: {elapsed_time:.2f} seconds")
             
             # Display Parameters
@@ -109,8 +113,8 @@ if uploaded_file:
             # Display Schedule
             st.subheader("Resulting Schedule")
             schedule_df = pd.DataFrame({
-                "Program": GENES,  # Original "Type of Program" values
-                "Scheduled Slot": solution
+                "Program": PROGRAMS,
+                "Assigned Hour": solution
             })
             st.dataframe(schedule_df)
 
