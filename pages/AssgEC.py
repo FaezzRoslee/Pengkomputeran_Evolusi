@@ -90,26 +90,21 @@ if uploaded_file:
         # Return the best solution
         best_fitness = max(fitness)
         best_solution = population[fitness.index(best_fitness)]
-        return best_solution, best_fitness, generation
+        return best_solution
 
     # Run the Genetic Algorithm
     if st.button("Run Algorithm"):
         with st.spinner("Running Genetic Algorithm..."):
-            start_time = time.time()
-            solution, best_fitness, generations = genetic_algorithm()
-            elapsed_time = time.time() - start_time
+            solution = genetic_algorithm()
 
             # Display results
             st.success("Optimization Complete!")
-            st.write(f"Generations: {generations}")
-            st.write(f"Best Fitness Score: {best_fitness:.2f}")
-            st.write(f"Elapsed Time: {elapsed_time:.2f} seconds")
-            
+
             # Display Parameters
             st.subheader("Parameters Used")
             st.write(f"- **Crossover Rate (CO_R):** {CO_R}")
             st.write(f"- **Mutation Rate (MUT_R):** {MUT_R}")
-            
+
             # Display Schedule
             st.subheader("Resulting Schedule")
             schedule_df = pd.DataFrame({
