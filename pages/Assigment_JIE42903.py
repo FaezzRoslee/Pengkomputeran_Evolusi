@@ -8,7 +8,7 @@ st.set_page_config(page_title="Genetic Algorithm for Scheduling")
 st.header("Genetic Algorithm for Program Scheduling")
 
 # File Upload
-@st.cache
+@st.cache_data
 def load_data(uploaded_file):
     return pd.read_csv(uploaded_file)
 
