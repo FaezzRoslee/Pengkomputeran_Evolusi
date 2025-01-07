@@ -1,22 +1,26 @@
 import streamlit as st
 import numpy as np
+import random
 
-# Function to initialize population
-def initialize_population(population_size):
-    return [np.random.rand(10) for _ in range(population_size)]  # Example of initializing 10-dimensional solutions
+# Title
+st.title("Hybrid Optimization Algorithm (EMGA)")
 
-# Function to calculate the cost of an individual
+# Inputs
+population_size = st.number_input("Enter population size:", min_value=10, step=1)
+num_generations = st.number_input("Enter number of generations:", min_value=10, step=1)
+crossover_rate = st.slider("Crossover rate:", 0.0, 1.0, 0.8)
+mutation_rate = st.slider("Mutation rate:", 0.0, 1.0, 0.1)
+termination_criteria = st.number_input("Termination threshold (or max fitness):", min_value=0.1)
+
+# Initialize population
+def initialize_population(size):
+    return [np.random.uniform(low=-10, high=10, size=5) for _ in range(size)]
+
+# Cost function (example)
 def cost_function(individual):
-    return np.sum(individual**2)  # Simple cost function, you can replace it with your own
+    return np.sum(individual**2)
 
-# Function to apply mode changes (correctly handling numpy arrays)
-def apply_mode_changes(group, mode_factor):
-    return [
-        ind + np.random.uniform(-mode_factor, mode_factor, size=ind.shape)  # Assuming 'ind' is a numpy array
-        for ind, _ in group  # _ represents the cost in the tuple (ind, cost)
-    ]
-
-# Function for ranking and grouping population
+# Ranking and grouping
 def rank_and_group(population):
     costs = [(ind, cost_function(ind)) for ind in population]
     sorted_population = sorted(costs, key=lambda x: x[1])  # Sort by cost
@@ -25,25 +29,50 @@ def rank_and_group(population):
     group_3 = sorted_population[2*len(population)//3:]
     return group_1, group_2, group_3
 
-# Function for crossover and mutation (for simplicity, just returning population)
+# Balanced and Oscillation Modes (correct handling of groups)
+def apply_mode_changes(group, mode_factor):
+    # Ensure we're only applying changes to the individuals (ind), not including their cost
+    return [
+        ind + np.random.uniform(-mode_factor, mode_factor, size=ind.shape)  # Assuming 'ind' is a numpy array
+        for ind, _ in group  # _ represents the cost in the tuple (ind, cost)
+    ]
+
+# Crossover and mutation
 def crossover_and_mutate(population, crossover_rate, mutation_rate):
-    return population  # Placeholder, you can replace with actual crossover and mutation logic
+    new_population = []
+    individuals = [ind[0] for ind in population]  # Extract individuals from tuples
+    for _ in range(len(individuals) // 2):
+        p1, p2 = random.sample(individuals, 2)
+        if random.random() < crossover_rate:
+            point = random.randint(1, len(p1) - 1)
+            child1 = np.concatenate((p1[:point], p2[point:]))
+            child2 = np.concatenate((p2[:point], p1[point:]))
+        else:
+            child1, child2 = p1, p2
+        new_population.extend([(mutate(child1, mutation_rate), cost_function(mutate(child1, mutation_rate))),
+                               (mutate(child2, mutation_rate), cost_function(mutate(child2, mutation_rate)))] )
+    return new_population
 
-# Function to select the best population (for now just returning the top 'population_size' individuals)
-def select_best_population(population, population_size):
-    return population[:population_size]
+def mutate(individual, mutation_rate):
+    if random.random() < mutation_rate:
+        idx = random.randint(0, len(individual) - 1)
+        individual[idx] += np.random.normal()
+    return individual
 
-# EMGA function
+def select_best_population(population, size):
+    return sorted(population, key=lambda x: x[1])[:size]
+
+# Main EMGA function
 def emga(population_size, num_generations, crossover_rate, mutation_rate, termination_criteria):
     population = initialize_population(population_size)
     for generation in range(num_generations):
         group_1, group_2, group_3 = rank_and_group(population)
         
         # Balanced mode on second and third group
-        group_2 = apply_mode_changes(group_2, mode_factor=1)
-        group_3 = apply_mode_changes(group_3, mode_factor=2)
+        group_2 = apply_mode_changes(group_2, mode_factor=4)  # Apply balanced mode
+        group_3 = apply_mode_changes(group_3, mode_factor=8)  # Apply stronger mode change
         
-        # Oscillation mode
+        # Oscillation mode effect on second and third group
         group_2 = apply_mode_changes(group_2, mode_factor=12)  # Combined oscillation effect
         group_3 = apply_mode_changes(group_3, mode_factor=20)  # Combined oscillation effect
         
@@ -62,16 +91,6 @@ def emga(population_size, num_generations, crossover_rate, mutation_rate, termin
     st.write("Best Solution:", best_solution[0])
     st.write("Best Cost:", best_solution[1])
 
-# Streamlit UI elements
-st.title("Evolutionary Multi-Group Algorithm (EMGA)")
-
-# Set the parameters for the algorithm
-population_size = st.number_input("Population Size", min_value=10, max_value=100, value=50)
-num_generations = st.number_input("Number of Generations", min_value=1, max_value=100, value=50)
-crossover_rate = st.slider("Crossover Rate", 0.0, 1.0, 0.7)
-mutation_rate = st.slider("Mutation Rate", 0.0, 1.0, 0.1)
-termination_criteria = st.number_input("Termination Criteria", min_value=0.0, value=0.01)
-
-# Button to run the EMGA algorithm
+# Run the algorithm
 if st.button("Run EMGA"):
     emga(population_size, num_generations, crossover_rate, mutation_rate, termination_criteria)
