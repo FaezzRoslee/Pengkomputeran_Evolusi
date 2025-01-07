@@ -31,9 +31,22 @@ def rank_and_group(population):
 
 # Balanced and Oscillation Modes
 def apply_mode_changes(group, mode_factor):
-    return [ind + np.random.uniform(-mode_factor, mode_factor, size=len(ind)) for ind, _ in group]
+    # Check if group is a list of tuples and extract the individual solution (assuming it's a tuple: (individual, cost))
+    return [
+        ind + np.random.uniform(-mode_factor, mode_factor, size=ind.shape)  # Assuming 'ind' is a numpy array
+        for ind, _ in group  # _ represents the cost in the tuple (ind, cost)
+    ]
 
-# Main EMGA function
+# Modify the group population before using it
+def rank_and_group(population):
+    costs = [(ind, cost_function(ind)) for ind in population]
+    sorted_population = sorted(costs, key=lambda x: x[1])  # Sort by cost
+    group_1 = sorted_population[:len(population)//3]
+    group_2 = sorted_population[len(population)//3:2*len(population)//3]
+    group_3 = sorted_population[2*len(population)//3:]
+    return group_1, group_2, group_3
+
+# EMGA function
 def emga(population_size, num_generations, crossover_rate, mutation_rate, termination_criteria):
     population = initialize_population(population_size)
     for generation in range(num_generations):
@@ -44,8 +57,8 @@ def emga(population_size, num_generations, crossover_rate, mutation_rate, termin
         group_3 = apply_mode_changes(group_3, mode_factor=2)
         
         # Oscillation mode
-        group_2 = apply_mode_changes(group_2, mode_factor=4+8)
-        group_3 = apply_mode_changes(group_3, mode_factor=9+11)
+        group_2 = apply_mode_changes(group_2, mode_factor=12)  # Combined oscillation effect
+        group_3 = apply_mode_changes(group_3, mode_factor=20)  # Combined oscillation effect
         
         # Apply crossover and mutation
         new_population = crossover_and_mutate(group_1 + group_2 + group_3, crossover_rate, mutation_rate)
@@ -61,34 +74,3 @@ def emga(population_size, num_generations, crossover_rate, mutation_rate, termin
     best_solution = min(population, key=lambda x: cost_function(x[0]))
     st.write("Best Solution:", best_solution[0])
     st.write("Best Cost:", best_solution[1])
-
-# Crossover and mutation
-def crossover_and_mutate(population, crossover_rate, mutation_rate):
-    new_population = []
-    individuals = [ind[0] for ind in population]  # Extract individuals from tuples
-    for _ in range(len(individuals) // 2):
-        p1, p2 = random.sample(individuals, 2)
-        if random.random() < crossover_rate:
-            point = random.randint(1, len(p1) - 1)
-            child1 = np.concatenate((p1[:point], p2[point:]))
-            child2 = np.concatenate((p2[:point], p1[point:]))
-        else:
-            child1, child2 = p1, p2
-        new_population.extend([(mutate(child1, mutation_rate), cost_function(mutate(child1, mutation_rate))),
-                               (mutate(child2, mutation_rate), cost_function(mutate(child2, mutation_rate)))])
-
-
-    return new_population
-
-def mutate(individual, mutation_rate):
-    if random.random() < mutation_rate:
-        idx = random.randint(0, len(individual) - 1)
-        individual[idx] += np.random.normal()
-    return individual
-
-def select_best_population(population, size):
-    return sorted(population, key=lambda x: x[1])[:size]
-
-# Run the algorithm
-if st.button("Run EMGA"):
-    emga(population_size, num_generations, crossover_rate, mutation_rate, termination_criteria)
