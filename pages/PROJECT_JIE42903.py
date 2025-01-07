@@ -31,6 +31,7 @@ def rank_and_group(population):
 
 # Balanced and Oscillation Modes
 def apply_mode_changes(group, mode_factor):
+    # Extract only individuals (not tuples)
     return [ind + np.random.uniform(-mode_factor, mode_factor, size=len(ind)) for ind, _ in group]
 
 # Main EMGA function
