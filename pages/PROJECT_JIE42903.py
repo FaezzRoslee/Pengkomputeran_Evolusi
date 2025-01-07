@@ -33,8 +33,8 @@ def rank_and_group(population):
 def apply_mode_changes(group, mode_factor):
     # Ensure we're only applying changes to the individuals (ind), not including their cost
     return [
-        ind + np.random.uniform(-mode_factor, mode_factor, size=ind.shape)  # Assuming 'ind' is a numpy array
-        for ind, _ in group  # _ represents the cost in the tuple (ind, cost)
+        (ind + np.random.uniform(-mode_factor, mode_factor, size=ind.shape), cost_function(ind + np.random.uniform(-mode_factor, mode_factor, size=ind.shape))) 
+        for ind, cost in group  # Iterate through the tuples of (ind, cost)
     ]
 
 # Crossover and mutation
