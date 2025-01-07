@@ -31,7 +31,7 @@ def rank_and_group(population):
 
 # Balanced and Oscillation Modes
 def apply_mode_changes(group, mode_factor):
-    return [ind + np.random.uniform(-mode_factor, mode_factor, size=ind.shape) for ind, _ in group]
+    return [ind + np.random.uniform(-mode_factor, mode_factor, size=len(ind)) for ind, _ in group]
 
 # Main EMGA function
 def emga(population_size, num_generations, crossover_rate, mutation_rate, termination_criteria):
@@ -51,29 +51,31 @@ def emga(population_size, num_generations, crossover_rate, mutation_rate, termin
         new_population = crossover_and_mutate(group_1 + group_2 + group_3, crossover_rate, mutation_rate)
         
         # Combine populations and select the best
-        population = select_best_population(population + new_population, population_size)
+        population = select_best_population(new_population, population_size)
         
         # Termination check
-        if min(cost_function(ind) for ind in population) <= termination_criteria:
+        if min(cost_function(ind[0]) for ind in population) <= termination_criteria:
             st.write(f"Termination reached at generation {generation}")
             break
     
-    best_solution = min(population, key=cost_function)
-    st.write("Best Solution:", best_solution)
-    st.write("Best Cost:", cost_function(best_solution))
+    best_solution = min(population, key=lambda x: cost_function(x[0]))
+    st.write("Best Solution:", best_solution[0])
+    st.write("Best Cost:", best_solution[1])
 
-# Placeholder for crossover and mutation (simplified)
+# Crossover and mutation
 def crossover_and_mutate(population, crossover_rate, mutation_rate):
     new_population = []
-    for _ in range(len(population) // 2):
-        p1, p2 = random.sample(population, 2)
+    individuals = [ind[0] for ind in population]  # Extract individuals from tuples
+    for _ in range(len(individuals) // 2):
+        p1, p2 = random.sample(individuals, 2)
         if random.random() < crossover_rate:
             point = random.randint(1, len(p1) - 1)
             child1 = np.concatenate((p1[:point], p2[point:]))
             child2 = np.concatenate((p2[:point], p1[point:]))
         else:
             child1, child2 = p1, p2
-        new_population.extend([mutate(child1, mutation_rate), mutate(child2, mutation_rate)])
+        new_population.extend([(mutate(child1, mutation_rate), cost_function(mutate(child1, mutation_rate))),
+                               (mutate(child2, mutation_rate), cost_function(mutate(child2, mutation_rate)))])
     return new_population
 
 def mutate(individual, mutation_rate):
@@ -83,7 +85,7 @@ def mutate(individual, mutation_rate):
     return individual
 
 def select_best_population(population, size):
-    return sorted(population, key=cost_function)[:size]
+    return sorted(population, key=lambda x: x[1])[:size]
 
 # Run the algorithm
 if st.button("Run EMGA"):
