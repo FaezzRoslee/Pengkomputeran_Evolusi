@@ -31,7 +31,6 @@ def rank_and_group(population):
 
 # Balanced and Oscillation Modes
 def apply_mode_changes(group, mode_factor):
-    # Extract only individuals (not tuples)
     return [ind + np.random.uniform(-mode_factor, mode_factor, size=len(ind)) for ind, _ in group]
 
 # Main EMGA function
@@ -77,6 +76,8 @@ def crossover_and_mutate(population, crossover_rate, mutation_rate):
             child1, child2 = p1, p2
         new_population.extend([(mutate(child1, mutation_rate), cost_function(mutate(child1, mutation_rate))),
                                (mutate(child2, mutation_rate), cost_function(mutate(child2, mutation_rate)))])
+
+
     return new_population
 
 def mutate(individual, mutation_rate):
