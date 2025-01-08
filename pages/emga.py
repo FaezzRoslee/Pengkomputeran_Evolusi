@@ -1,5 +1,6 @@
 import numpy as np
 import random
+import streamlit as st
 
 # Define the fitness function (example: Sphere function)
 def fitness_function(solution):
@@ -49,6 +50,7 @@ def mutate(solution, rate):
 
 # Main EMGA function
 def emga(pop_size=50, dimensions=10, max_generations=100, state="balanced", bounds=(-100, 100), risk1=0.1, risk2=0.2):
+    st.write(f"Running EMGA with population size: {pop_size}, dimensions: {dimensions}, generations: {max_generations}")
     population = initialize_population(pop_size, dimensions, bounds)
     best_solution = min(population, key=fitness_function)
     for generation in range(max_generations):
@@ -76,10 +78,11 @@ def emga(pop_size=50, dimensions=10, max_generations=100, state="balanced", boun
         if fitness_function(current_best) < fitness_function(best_solution):
             best_solution = current_best
 
-        print(f"Generation {generation+1}: Best fitness = {fitness_function(best_solution)}")
+        st.write(f"Generation {generation+1}: Best fitness = {fitness_function(best_solution)}")
 
     return best_solution
 
 if __name__ == "__main__":
+    st.title("Hybrid Exchange Market Genetic Algorithm (EMGA)")
     best = emga()
-    print(f"Best solution found: {best}")
+    st.write(f"Best solution found: {best}")
