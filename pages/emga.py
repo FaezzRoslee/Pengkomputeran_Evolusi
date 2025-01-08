@@ -100,4 +100,4 @@ if __name__ == "__main__":
     if st.button("Run EMGA"):
         bounds = (lower_bound, upper_bound)
         best = emga(pop_size, dimensions, max_generations, state, bounds, risk1, risk2, mutation_rate)
-        st.write(f"Best solution found: {best}")
+        st.write("Best solution found:", [float(value) for value in best])
