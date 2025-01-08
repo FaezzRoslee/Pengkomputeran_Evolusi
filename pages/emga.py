@@ -96,7 +96,8 @@ if __name__ == "__main__":
     risk2 = st.slider("Risk Factor 2", min_value=0.0, max_value=1.0, value=0.2, step=0.01)
     mutation_rate = st.slider("Mutation Rate", min_value=0.0, max_value=1.0, value=0.05, step=0.01)
     
-    # Run the algorithm with user inputs
-    bounds = (lower_bound, upper_bound)
-    best = emga(pop_size, dimensions, max_generations, state, bounds, risk1, risk2, mutation_rate)
-    st.write(f"Best solution found: {best}")
+    # Add a button to run the algorithm
+    if st.button("Run EMGA"):
+        bounds = (lower_bound, upper_bound)
+        best = emga(pop_size, dimensions, max_generations, state, bounds, risk1, risk2, mutation_rate)
+        st.write(f"Best solution found: {best}")
