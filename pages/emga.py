@@ -97,12 +97,15 @@ if __name__ == "__main__":
     mutation_rate = st.slider("Mutation Rate", min_value=0.0, max_value=1.0, value=0.05, step=0.01)
     
     # Add a button to run the algorithm
-    if st.button("Run EMGA"):
-        bounds = (lower_bound, upper_bound)
-        best = emga(pop_size, dimensions, max_generations, state, bounds, risk1, risk2, mutation_rate)
-        st.write("Best solution found:", [float(value) for value in best])
-        
-        # Calculate and display the fitness of the best solution
-        best_fitness = fitness_function(best)
-        st.write(f"Fitness of best solution: {best_fitness}")
+if st.button("Run EMGA"):
+    bounds = (lower_bound, upper_bound)
+    best = emga(pop_size, dimensions, max_generations, state, bounds, risk1, risk2, mutation_rate)
+    
+    # Format the output as a box
+    formatted_solution = "Best solution found:\n" + " | ".join([f"x{i} = {value:.4f}" for i, value in enumerate(best)])
+    st.markdown(f"```\n{formatted_solution}\n```")
+    
+    # Display the fitness of the best solution
+    best_fitness = fitness_function(best)
+    st.markdown(f"```\nFitness of best solution: {best_fitness:.4f}\n```")
 
