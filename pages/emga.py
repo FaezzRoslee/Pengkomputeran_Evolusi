@@ -49,7 +49,7 @@ def mutate(solution, rate):
     return [gene + np.random.normal() if random.random() < rate else gene for gene in solution]
 
 # Main EMGA function
-def emga(pop_size=50, dimensions=10, max_generations=100, state="balanced", bounds=(-100, 100), risk1=0.1, risk2=0.2):
+def emga(pop_size, dimensions, max_generations, state, bounds, risk1, risk2, mutation_rate):
     st.write(f"Running EMGA with population size: {pop_size}, dimensions: {dimensions}, generations: {max_generations}")
     population = initialize_population(pop_size, dimensions, bounds)
     best_solution = min(population, key=fitness_function)
@@ -65,7 +65,7 @@ def emga(pop_size=50, dimensions=10, max_generations=100, state="balanced", boun
         population.sort(key=fitness_function)
         
         # Apply Genetic Algorithm operations
-        ga_population = crossover_and_mutation(population, mutation_rate=0.05)
+        ga_population = crossover_and_mutation(population, mutation_rate)
         ga_population.sort(key=fitness_function)
         
         # Combine old and new populations, select best half
@@ -84,5 +84,19 @@ def emga(pop_size=50, dimensions=10, max_generations=100, state="balanced", boun
 
 if __name__ == "__main__":
     st.title("Hybrid Exchange Market Genetic Algorithm (EMGA)")
-    best = emga()
+    
+    # User inputs for parameters
+    pop_size = st.number_input("Population Size", min_value=10, max_value=500, value=50, step=10)
+    dimensions = st.number_input("Number of Dimensions", min_value=2, max_value=100, value=10, step=1)
+    max_generations = st.number_input("Max Generations", min_value=1, max_value=1000, value=100, step=10)
+    state = st.selectbox("Market State", ["balanced", "fluctuating"])
+    lower_bound = st.number_input("Lower Bound", value=-100.0)
+    upper_bound = st.number_input("Upper Bound", value=100.0)
+    risk1 = st.slider("Risk Factor 1", min_value=0.0, max_value=1.0, value=0.1, step=0.01)
+    risk2 = st.slider("Risk Factor 2", min_value=0.0, max_value=1.0, value=0.2, step=0.01)
+    mutation_rate = st.slider("Mutation Rate", min_value=0.0, max_value=1.0, value=0.05, step=0.01)
+    
+    # Run the algorithm with user inputs
+    bounds = (lower_bound, upper_bound)
+    best = emga(pop_size, dimensions, max_generations, state, bounds, risk1, risk2, mutation_rate)
     st.write(f"Best solution found: {best}")
