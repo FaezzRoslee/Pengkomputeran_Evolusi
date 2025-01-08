@@ -101,3 +101,8 @@ if __name__ == "__main__":
         bounds = (lower_bound, upper_bound)
         best = emga(pop_size, dimensions, max_generations, state, bounds, risk1, risk2, mutation_rate)
         st.write("Best solution found:", [float(value) for value in best])
+        
+        # Calculate and display the fitness of the best solution
+        best_fitness = fitness_function(best)
+        st.write(f"Fitness of best solution: {best_fitness}")
+
