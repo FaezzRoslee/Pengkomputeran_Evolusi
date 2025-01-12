@@ -32,7 +32,7 @@ def genetic_algorithm(pop_size, dimensions, max_generations, bounds, mutation_ra
     population = initialize_population(pop_size, dimensions, bounds)
     best_solution = min(population, key=fitness_function)
     for generation in range(max_generations):
-        
+
         # Apply Genetic Algorithm operations
         ga_population = crossover_and_mutation(population, mutation_rate)
         ga_population.sort(key=fitness_function)
