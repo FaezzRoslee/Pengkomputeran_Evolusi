@@ -1,6 +1,7 @@
 import numpy as np
 import random
 import streamlit as st
+import pandas as pd
 
 # Define the fitness function (example: Sphere function)
 def fitness_function(solution):
@@ -60,6 +61,21 @@ if __name__ == "__main__":
     lower_bound = st.number_input("Lower Bound", value=-100.0)
     upper_bound = st.number_input("Upper Bound", value=100.0)
     mutation_rate = st.slider("Mutation Rate", min_value=0.0, max_value=1.0, value=0.05, step=0.01)
+
+    # File uploader for dataset
+    uploaded_file = st.file_uploader("Upload a CSV dataset", type="csv")
+    if uploaded_file:
+        data = pd.read_csv(uploaded_file)
+        st.write("Uploaded Dataset:")
+        st.dataframe(data)
+
+        # Extract first row as a test solution
+        if len(data.columns) > 0:
+            test_solution = data.iloc[0].values
+            test_fitness = fitness_function(test_solution)
+            st.markdown(f"```
+Fitness of first solution from dataset: {test_fitness:.4f}
+```")
 
     # Add a button to run the algorithm
     if st.button("Run GA"):
