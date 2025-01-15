@@ -37,21 +37,25 @@ def update_velocity(particle, personal_best, global_best, w=0.5, c1=1.5, c2=1.5)
 def run_pso_algorithm(data, iterations=50, population_size=30):
     """Runs the Particle Swarm Optimization algorithm on the given dataset."""
     particles = initialize_particles(data, population_size)
-    personal_best = particles.copy()
-    global_best = max(personal_best, key=lambda x: x['fitness'])
-    
+    personal_best = particles.copy()  # List to track personal bests for each particle
+    global_best = max(personal_best, key=lambda x: x['fitness'])  # Track the best overall
+
     fitness_trends = []
     for generation in range(iterations):
-        for particle in particles:
+        for i, particle in enumerate(particles):
+            # Calculate fitness for the current particle
             particle['fitness'] = fitness_cal(particle, data)
-            if particle['fitness'] > max(personal_best, key=lambda x: x['fitness'])['fitness']:
-                personal_best = particle.copy()
-        if personal_best['fitness'] > global_best['fitness']:
-            global_best = personal_best.copy()
+            # Update personal best if the current fitness is better
+            if particle['fitness'] > personal_best[i]['fitness']:
+                personal_best[i] = particle.copy()  # Update personal best for this particle
+        # Find the best particle in personal_best
+        current_best = max(personal_best, key=lambda x: x['fitness'])
+        if current_best['fitness'] > global_best['fitness']:
+            global_best = current_best.copy()  # Update global best
 
         # Update positions based on velocities
-        for particle in particles:
-            velocity = update_velocity(particle, personal_best, global_best)
+        for i, particle in enumerate(particles):
+            velocity = update_velocity(particle, personal_best[i], global_best)
             particle['age'] = max(18, min(64, int(particle['age'] + velocity['age'])))
             particle['bmi'] = max(15.0, min(40.0, particle['bmi'] + velocity['bmi']))
             particle['children'] = max(0, min(5, int(particle['children'] + velocity['children'])))
