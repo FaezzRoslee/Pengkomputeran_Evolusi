@@ -20,11 +20,33 @@ if uploaded_file is not None:
         
         # Display Results
         st.write("Optimization Results")
-        st.write(results['best_solution'])  # Replace with relevant result structure
+        st.write("Best Solution (Optimal Parameters):", results['best_solution'])
         
+        # Plot Fitness Trends
         st.subheader('Fitness Trends Over Generations')
         fig, ax = plt.subplots()
         ax.plot(results['generations'], results['fitness_values'])
         ax.set_xlabel('Generation')
         ax.set_ylabel('Fitness Value')
         st.pyplot(fig)
+
+        # Define a function to calculate predictions
+        def calculate_prediction(row, solution):
+            return (
+                solution[0] +  # Intercept
+                solution[1] * row['Age'] +
+                solution[2] * row['BMI'] +
+                solution[3] * row['Smoker']
+            )
+        
+        # Apply the best solution to predict costs
+        try:
+            df['Predicted_Cost'] = df.apply(lambda row: calculate_prediction(row, results['best_solution']), axis=1)
+            st.subheader("Predicted Insurance Costs")
+            if 'Actual_Cost' in df.columns:
+                df['Error'] = abs(df['Actual_Cost'] - df['Predicted_Cost'])
+                st.write(df[['Actual_Cost', 'Predicted_Cost', 'Error']])
+            else:
+                st.write(df[['Predicted_Cost']])
+        except Exception as e:
+            st.error(f"Error in calculating predictions: {e}")
