@@ -16,37 +16,45 @@ if uploaded_file is not None:
 
     if st.button("Run PSO Optimization"):
         # Run PSO using the uploaded dataset
-        results = run_pso_algorithm(df)
-        
-        # Display Results
-        st.write("Optimization Results")
-        st.write("Best Solution (Optimal Parameters):", results['best_solution'])
-        
-        # Plot Fitness Trends
-        st.subheader('Fitness Trends Over Generations')
-        fig, ax = plt.subplots()
-        ax.plot(results['generations'], results['fitness_values'])
-        ax.set_xlabel('Generation')
-        ax.set_ylabel('Fitness Value')
-        st.pyplot(fig)
-
-        # Define a function to calculate predictions
-        def calculate_prediction(row, solution):
-            return (
-                solution[0] +  # Intercept
-                solution[1] * row['Age'] +
-                solution[2] * row['BMI'] +
-                solution[3] * row['Smoker']
-            )
-        
-        # Apply the best solution to predict costs
         try:
-            df['Predicted_Cost'] = df.apply(lambda row: calculate_prediction(row, results['best_solution']), axis=1)
-            st.subheader("Predicted Insurance Costs")
-            if 'Actual_Cost' in df.columns:
-                df['Error'] = abs(df['Actual_Cost'] - df['Predicted_Cost'])
-                st.write(df[['Actual_Cost', 'Predicted_Cost', 'Error']])
-            else:
-                st.write(df[['Predicted_Cost']])
+            results = run_pso_algorithm(df)
+            
+            # Display Results
+            st.write("Optimization Results")
+            st.write("Best Solution (Optimal Parameters):")
+            st.json(results['best_solution'])  # Display as JSON for readability
+            
+            # Plot Fitness Trends
+            st.subheader('Fitness Trends Over Generations')
+            fig, ax = plt.subplots()
+            ax.plot(results['generations'], results['fitness_values'])
+            ax.set_xlabel('Generation')
+            ax.set_ylabel('Fitness Value')
+            st.pyplot(fig)
+
+            # Define a function to calculate predictions
+            def calculate_prediction(row, solution):
+                try:
+                    return (
+                        solution['intercept'] +  # Intercept
+                        solution['age'] * row['age'] +
+                        solution['bmi'] * row['bmi'] +
+                        solution['smoker'] * (1 if row['smoker'] == 'yes' else 0)  # Handle categorical
+                        # Add more features if needed
+                    )
+                except KeyError as e:
+                    raise ValueError(f"Missing key in solution: {e}")
+
+            # Apply the best solution to predict costs
+            try:
+                df['Predicted_Cost'] = df.apply(lambda row: calculate_prediction(row, results['best_solution']), axis=1)
+                st.subheader("Predicted Insurance Costs")
+                if 'charges' in df.columns:
+                    df['Error'] = abs(df['charges'] - df['Predicted_Cost'])
+                    st.write(df[['charges', 'Predicted_Cost', 'Error']])
+                else:
+                    st.write(df[['Predicted_Cost']])
+            except Exception as e:
+                st.error(f"Error in calculating predictions: {e}")
         except Exception as e:
-            st.error(f"Error in calculating predictions: {e}")
+            st.error(f"Error during optimization: {e}")
