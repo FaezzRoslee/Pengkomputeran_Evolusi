@@ -25,35 +25,27 @@ def preprocess_data(data):
         ('cat', OneHotEncoder(drop='first'), categorical_features)
     ])
 
-    X = data.drop('charges', axis=1)
-    y = data['charges']
+    X = data.drop('charges', axis=1)  # Input features
+    y = data['charges']  # Target variable (actual insurance costs)
 
-    X_transformed = preprocessor.fit_transform(X)
+    X_transformed = preprocessor.fit_transform(X)  # Apply preprocessing
     return X_transformed, y, preprocessor
 
 # Define fitness function for PSO
-def fitness_function(params, X_train, y_train, X_val, y_val):
+def fitness_function(params, X_train, y_train):
     # Extract parameters
     intercept = params[0]
     coefficients = np.array(params[1:])
 
-    # Ensure dimensions match for dot product
-    if X_val.shape[1] != len(coefficients):
-        raise ValueError(f"Mismatch: X_val has {X_val.shape[1]} features, but coefficients have length {len(coefficients)}")
-
     # Predict using the linear regression model
-    y_pred = np.dot(X_val, coefficients) + intercept
+    y_pred = np.dot(X_train, coefficients) + intercept
 
-    # Ensure y_val and y_pred match in length
-    if len(y_val) != len(y_pred):
-        raise ValueError(f"Mismatch: y_val has {len(y_val)} elements, but y_pred has {len(y_pred)}")
-
-    # Calculate MSE on validation set
-    mse = mean_squared_error(y_val, y_pred)
+    # Calculate MSE on training set
+    mse = mean_squared_error(y_train, y_pred)
     return mse
 
 # PSO Optimization
-def optimize_pso(X_train, y_train, X_val, y_val):
+def optimize_pso(X_train, y_train):
     num_features = X_train.shape[1]
 
     # Lower and upper bounds for parameters
@@ -62,7 +54,7 @@ def optimize_pso(X_train, y_train, X_val, y_val):
 
     # PSO optimization
     best_params, _ = pso(
-        fitness_function, lb, ub, args=(X_train, y_train, X_val, y_val), swarmsize=30, maxiter=100
+        fitness_function, lb, ub, args=(X_train, y_train), swarmsize=30, maxiter=100
     )
 
     return best_params
@@ -80,32 +72,29 @@ st.dataframe(data.head())
 # Preprocess data
 X, y, preprocessor = preprocess_data(data)
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-X_train, X_val, y_train, y_val = train_test_split(X_train, y_train, test_size=0.25, random_state=42)
 
 # PSO Optimization
 if st.button('Train Model with PSO'):
     st.write("### Training in Progress...")
-    try:
-        best_params = optimize_pso(X_train, y_train, X_val, y_val)
+    best_params = optimize_pso(X_train, y_train)
 
-        # Extract optimal parameters
-        intercept = best_params[0]
-        coefficients = np.array(best_params[1:])
+    # Extract optimal parameters
+    intercept = best_params[0]
+    coefficients = np.array(best_params[1:])
 
-        # Make predictions
-        y_pred = np.dot(X_test, coefficients) + intercept
+    # Make predictions on test set
+    y_pred = np.dot(X_test, coefficients) + intercept
 
-        # Evaluate model
-        mse = mean_squared_error(y_test, y_pred)
-        st.write(f"### Model Evaluation")
-        st.write(f"Mean Squared Error (MSE): {mse:.2f}")
+    # Evaluate model
+    mse = mean_squared_error(y_test, y_pred)
+    st.write(f"### Model Evaluation")
+    st.write(f"Mean Squared Error (MSE): {mse:.2f}")
 
-        # Display predictions
-        results = pd.DataFrame({
-            'Actual': y_test,
-            'Predicted': y_pred
-        })
-        st.write("### Predictions vs Actual")
-        st.dataframe(results)
-    except ValueError as e:
-        st.error(f"An error occurred: {e}")
+    # Display predictions and actual values
+    results = pd.DataFrame({
+        'Actual': y_test.values,  # Actual insurance costs
+        'Predicted': y_pred       # Predicted insurance costs by the model
+    }).reset_index(drop=True)
+
+    st.write("### Predictions vs Actual")
+    st.dataframe(results)
