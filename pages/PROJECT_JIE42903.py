@@ -64,10 +64,10 @@ if uploaded_file is not None:
 
                     # Predictions using best solution
                     def calculate_prediction(row, solution):
-                        intercept = solution.get('intercept', 0)
-                        age_coeff = solution.get('age', 0)
-                        bmi_coeff = solution.get('bmi', 0)
-                        smoker_coeff = solution.get('smoker', 0)
+                        intercept = float(solution.get('intercept', 0))
+                        age_coeff = float(solution.get('age', 0))
+                        bmi_coeff = float(solution.get('bmi', 0))
+                        smoker_coeff = float(solution.get('smoker', 0))
                         return (
                             intercept +
                             age_coeff * row['age'] +
