@@ -21,9 +21,9 @@ if uploaded_file is not None:
 
         # Convert categorical 'smoker' column to numeric
         if 'smoker' in df.columns:
+            # Apply conversion to numeric, with 'yes' -> 1, 'no' -> 0, other values are set to NaN
             df['smoker'] = df['smoker'].apply(lambda x: 1 if str(x).lower() == 'yes' else (0 if str(x).lower() == 'no' else None))
-            # If there are any unexpected values, set them to None
-            df['smoker'] = pd.to_numeric(df['smoker'], errors='coerce')  # Ensure everything is numeric
+            df['smoker'] = pd.to_numeric(df['smoker'], errors='coerce')  # Ensure invalid values are set to NaN
         else:
             st.warning("Column 'smoker' not found in the dataset.")
 
