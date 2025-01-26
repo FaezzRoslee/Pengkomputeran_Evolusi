@@ -1,5 +1,7 @@
 import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler, OneHotEncoder
 from sklearn.compose import ColumnTransformer
@@ -33,31 +35,34 @@ def preprocess_data(data):
 
 # Define fitness function for PSO
 def fitness_function(params, X_train, y_train):
-    # Extract parameters
     intercept = params[0]
     coefficients = np.array(params[1:])
-
-    # Predict using the linear regression model
     y_pred = np.dot(X_train, coefficients) + intercept
-
-    # Calculate MSE on training set
     mse = mean_squared_error(y_train, y_pred)
     return mse
 
 # PSO Optimization
 def optimize_pso(X_train, y_train):
     num_features = X_train.shape[1]
-
-    # Lower and upper bounds for parameters
     lb = [-100] + [-10] * num_features
     ub = [100] + [10] * num_features
 
-    # PSO optimization
     best_params, _ = pso(
         fitness_function, lb, ub, args=(X_train, y_train), swarmsize=30, maxiter=100
     )
-
     return best_params
+
+# Visualization function
+def plot_predictions_vs_actual(actual, predicted):
+    plt.figure(figsize=(10, 6))
+    sns.scatterplot(x=actual, y=predicted, alpha=0.7, color='blue', label='Predicted vs Actual')
+    plt.plot([min(actual), max(actual)], [min(actual), max(actual)], color='red', linestyle='--', label='Ideal Fit')
+    plt.title('Predictions vs Actual Insurance Costs', fontsize=16)
+    plt.xlabel('Actual Insurance Costs', fontsize=12)
+    plt.ylabel('Predicted Insurance Costs', fontsize=12)
+    plt.legend()
+    plt.grid(alpha=0.3)
+    st.pyplot(plt.gcf())
 
 # Main function for Streamlit
 st.title('Insurance Cost Prediction with PSO')
@@ -92,9 +97,13 @@ if st.button('Train Model with PSO'):
 
     # Display predictions and actual values
     results = pd.DataFrame({
-        'Actual': y_test.values,  # Actual insurance costs
-        'Predicted': y_pred       # Predicted insurance costs by the model
+        'Actual': y_test.values,
+        'Predicted': y_pred
     }).reset_index(drop=True)
 
     st.write("### Predictions vs Actual")
     st.dataframe(results)
+
+    # Plot Predictions vs Actual
+    st.write("### Visualization: Predictions vs Actual")
+    plot_predictions_vs_actual(y_test.values, y_pred)
