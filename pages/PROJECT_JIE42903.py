@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
-from pso_algorithm import run_pso_algorithm  # Import from your GitHub-pushed module
+from pso_algorithm import run_pso_algorithm  # Import from your module
 
 # Title and Description
 st.title('PSO Optimization for Insurance Cost Estimation')
@@ -30,17 +30,27 @@ if uploaded_file is not None:
             ax.plot(results['generations'], results['fitness_values'])
             ax.set_xlabel('Generation')
             ax.set_ylabel('Fitness Value')
+            ax.set_title('Fitness Trends')
             st.pyplot(fig)
 
             # Define a function to calculate predictions
             def calculate_prediction(row, solution):
                 try:
+                    # Handle intercept and coefficients dynamically
+                    intercept = solution.get('intercept', 0)
+                    age_coeff = solution.get('age', 0)
+                    bmi_coeff = solution.get('bmi', 0)
+                    smoker_coeff = solution.get('smoker', 0)
+
+                    # Convert 'smoker' to numeric (1 for 'yes', 0 for 'no')
+                    smoker_value = 1 if row['smoker'] == 'yes' else 0
+
+                    # Prediction formula
                     return (
-                        solution['charges'] +
-                        solution['age'] * row['age'] +
-                        solution['bmi'] * row['bmi'] +
-                        solution['smoker'] * (1 if row['smoker'] == 'yes' else 0)  # Handle categorical
-                        # Add more features if needed
+                        intercept +
+                        age_coeff * row['age'] +
+                        bmi_coeff * row['bmi'] +
+                        smoker_coeff * smoker_value
                     )
                 except KeyError as e:
                     raise ValueError(f"Missing key in solution: {e}")
