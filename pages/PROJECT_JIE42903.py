@@ -36,7 +36,7 @@ if uploaded_file is not None:
             def calculate_prediction(row, solution):
                 try:
                     return (
-                        solution['intercept'] +  # Intercept
+                        solution['charges'] +
                         solution['age'] * row['age'] +
                         solution['bmi'] * row['bmi'] +
                         solution['smoker'] * (1 if row['smoker'] == 'yes' else 0)  # Handle categorical
