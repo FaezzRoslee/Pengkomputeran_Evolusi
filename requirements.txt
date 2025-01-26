@@ -5,3 +5,8 @@ numpy
 deap
 pandas
 pyngrok
+numpy
+pandas
+scikit-learn
+streamlit
+pyswarm
